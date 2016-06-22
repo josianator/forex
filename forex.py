@@ -5,12 +5,17 @@ import matplotlib.dates as mdates
 import numpy as np
 import time
 
+totalStart = time.time()
+
+# fun large globals - here for easy access...
 date, bid, ask = np.loadtxt('GBPUSD1d.txt', unpack = True,
                             delimiter = ',',
                             converters = { 0 : mdates.strpdate2num('%Y%m%d%H%M%S')})
-                          
+               
+avgLine = ((bid + ask) / 2)   
 patternAr = []
 performanceAr = []
+patForRec = []
               
 
               
@@ -19,7 +24,6 @@ def percentChange(startPoint, currentPoint):
 
 def patternStorage():
     patStartTime = time.time()
-    avgLine = ((bid + ask) / 2)
     x = len(avgLine)
     
     y = 11
@@ -70,6 +74,75 @@ def patternStorage():
     print len(performanceAr)
     print 'Pattern storage took:', patEndTime - patStartTime, 'seconds'
     
+    
+def currentPattern():
+    
+    cp1  = percentChange(avgLine[-11], avgLine[-10])
+    cp2  = percentChange(avgLine[-11], avgLine[-9])
+    cp3  = percentChange(avgLine[-11], avgLine[-8])
+    cp4  = percentChange(avgLine[-11], avgLine[-7])
+    cp5  = percentChange(avgLine[-11], avgLine[-6])
+    cp6  = percentChange(avgLine[-11], avgLine[-5])
+    cp7  = percentChange(avgLine[-11], avgLine[-4])
+    cp8  = percentChange(avgLine[-11], avgLine[-3])
+    cp9  = percentChange(avgLine[-11], avgLine[-2])
+    cp10 = percentChange(avgLine[-11], avgLine[-1])
+    
+    patForRec.append(cp1)
+    patForRec.append(cp2)
+    patForRec.append(cp3)
+    patForRec.append(cp4)
+    patForRec.append(cp5)
+    patForRec.append(cp6)
+    patForRec.append(cp7)
+    patForRec.append(cp8)
+    patForRec.append(cp9)
+    patForRec.append(cp10)
+    
+    print patForRec
+    
+def patternRecognition():
+    for eachPattern in patternAr:
+    
+        sim1  = 100.00 - abs(percentChange(eachPattern[0], patForRec[0]))
+        sim2  = 100.00 - abs(percentChange(eachPattern[1], patForRec[1]))
+        sim3  = 100.00 - abs(percentChange(eachPattern[2], patForRec[2]))
+        sim4  = 100.00 - abs(percentChange(eachPattern[3], patForRec[3]))
+        sim5  = 100.00 - abs(percentChange(eachPattern[4], patForRec[4]))
+        sim6  = 100.00 - abs(percentChange(eachPattern[5], patForRec[5]))
+        sim7  = 100.00 - abs(percentChange(eachPattern[6], patForRec[6]))
+        sim8  = 100.00 - abs(percentChange(eachPattern[7], patForRec[7]))
+        sim9  = 100.00 - abs(percentChange(eachPattern[8], patForRec[8]))
+        sim10 = 100.00 - abs(percentChange(eachPattern[9], patForRec[9]))
+        
+        simSum = 0.0
+        
+        simSum += sim1 
+        simSum += sim2 
+        simSum += sim3 
+        simSum += sim4 
+        simSum += sim5 
+        simSum += sim6 
+        simSum += sim7 
+        simSum += sim8 
+        simSum += sim9 
+        simSum += sim10
+        
+        howSim = simSum / 10
+        
+        if howSim > 70:
+            patDex = patternAr.index(eachPattern)
+        
+            print '###########################'
+            print '###########################'
+            print patForRec
+            print '==========================='
+            print '==========================='
+            print eachPattern            
+            print '---------------------------'
+            print 'predicted outcome', performanceAr[patDex]
+            print '###########################'
+            print '###########################'
         
 def graphRawFX():
 
@@ -101,8 +174,15 @@ def main():
     # graphRawFX()
 
     patternStorage()
+    
+    currentPattern()
 
+    patternRecognition()
 
+    totalTime = time.time() - totalStart
+    
+    print 'Entire processing time took:', totalTime, 'seconds'
+    
 if __name__ == '__main__':
 
     main()
