@@ -8,16 +8,24 @@ import time
 date, bid, ask = np.loadtxt('GBPUSD1d.txt', unpack = True,
                             delimiter = ',',
                             converters = { 0 : mdates.strpdate2num('%Y%m%d%H%M%S')})
-                            
-def percentChange(startPoint, currentPoint):
-    return (100.00 * (float(currentPoint) - float(startPoint)) / float(startPoint))
+                          
+patternAr = []
+performanceAr = []
+              
 
-def patternFinder():
+              
+def percentChange(startPoint, currentPoint):
+    return (100.00 * (float(currentPoint) - float(startPoint)) / float(abs(startPoint)))
+
+def patternStorage():
+    patStartTime = time.time()
     avgLine = ((bid + ask) / 2)
     x = len(avgLine)
     
     y = 11
     while y < x:
+        pattern = []
+    
         # I <3 magic numbers!
         p1  = percentChange(avgLine[y - 10], avgLine[y - 9])
         p2  = percentChange(avgLine[y - 10], avgLine[y - 8])
@@ -33,15 +41,35 @@ def patternFinder():
 
         outcomeRange = avgLine[y + 20 : y + 30]
         currentPoint = avgLine[y]
+        # avoid -infinity
+        try:
+            avgOutcome =  reduce(lambda x, y: x + y, outcomeRange) / len(outcomeRange)
+        except Exception, e:
+            print str(e)
+            avgOutcome = 0
+            
+        futureOutcome = percentChange(currentPoint, avgOutcome)
+        pattern.append(p1 )
+        pattern.append(p2 )
+        pattern.append(p3 )
+        pattern.append(p4 )
+        pattern.append(p5 )
+        pattern.append(p6 )
+        pattern.append(p7 )
+        pattern.append(p8 )
+        pattern.append(p9 )
+        pattern.append(p10)
         
-        print reduce(lambda x, y: x + y, outcomeRange) / len(outcomeRange)
-        print currentPoint
-        print ' ____'
-        print p1, p2, p3, p4, p5, p6, p7, p8, p9, p10
+        patternAr.append(pattern)
+        performanceAr.append(futureOutcome)
         
         y += 1
         
-        time.sleep(5555)
+    patEndTime = time.time()    
+    print len(patternAr)
+    print len(performanceAr)
+    print 'Pattern storage took:', patEndTime - patStartTime, 'seconds'
+    
         
 def graphRawFX():
 
@@ -72,7 +100,7 @@ def graphRawFX():
 def main():
     # graphRawFX()
 
-    patternFinder()
+    patternStorage()
 
 
 if __name__ == '__main__':
