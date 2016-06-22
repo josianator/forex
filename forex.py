@@ -17,11 +17,15 @@ patternAr = []
 performanceAr = []
 patForRec = []
               
-
+MAXIMUM = 1e12
               
 def percentChange(startPoint, currentPoint):
-    return (100.00 * (float(currentPoint) - float(startPoint)) / float(abs(startPoint)))
-
+    try:
+        return (100.00 * (float(currentPoint) - float(startPoint)) / float(abs(startPoint)))
+    except:
+        return MAXIMUM
+    
+    
 def patternStorage():
     patStartTime = time.time()
     x = len(avgLine)
@@ -130,7 +134,7 @@ def patternRecognition():
         
         howSim = simSum / 10
         
-        if howSim > 70:
+        if howSim > 80:
             patDex = patternAr.index(eachPattern)
         
             print '###########################'
@@ -141,6 +145,11 @@ def patternRecognition():
             print eachPattern            
             print '---------------------------'
             print 'predicted outcome', performanceAr[patDex]
+            xp = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            fig = plt.figure()
+            plt.plot(xp, patForRec)
+            plt.plot(xp, eachPattern)
+            plt.show()
             print '###########################'
             print '###########################'
         
